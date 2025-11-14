@@ -10,11 +10,11 @@
 	```bash
 	python3 -m venv .venv
 	source .venv/bin/activate
-	pip install -r Exp_3_HybridPSSP_v1_to_4/v4\ (final)/requirements.txt
+	pip install -r Exp_3_HybridPSSP_v1_to_4/v4_final/requirements.txt
 	```
 3. **Generate ESM embeddings and processed splits**
 	```bash
-	cd Exp_3_HybridPSSP_v1_to_4/v4\ (final)
+	cd Exp_3_HybridPSSP_v1_to_4/v4_final
 	python dataprep.py \
 		 --archive archive \
 		 --out data/processed \
@@ -56,7 +56,27 @@
 	```
 
 ## Project Premise
-Deep learning for protein structure prediction addresses the challenge of inferring a protein’s secondary structure directly from its amino-acid sequence. Experimental pipelines (X-ray crystallography, NMR) are accurate but slow and expensive; instead, we predict both coarse-grained Q3 states (helix, strand, coil) and fine-grained Q8 states (eight DSSP categories). Successful models balance local motif recognition with long-range dependencies and benefit from enriched residue features (evolutionary profiles, protein language-model embeddings).
+Proteins are like the "programs" that run biological processes in living organisms. Their ability to function
+depends on how their "code" (the sequence of amino acids) folds into a specific 3D structure. Protein
+Secondary Structure Prediction (PSSP) involves predicting the local structural elements (like helices,
+strands, and loops) of a protein based on its primary amino acid sequence. Traditionally, techniques like
+X-ray crystallography or NMR are used to solve the protein’s 3D structure, and from this, tools like DSSP
+assign secondary structure elements. However, these experimental methods are costly and time-
+consuming.
+The goal of this assignment is to predict the secondary structure (sst3 and sst8 values) from just the
+primary sequence (seq) using deep learning techniques, which can significantly reduce the need for
+expensive lab work. In this task, secondary structure can be classified into eight categories (Q8) or
+simplified into three states (Q3), which offers different levels of granularity in prediction.
+Interesting projects could involve:
+1. Developing deep learning techniques (such as RNNs, CNNs, or transformers) to predict the Q3 and
+Q8 secondary structures from the protein sequence. This will test your model's ability to handle
+both short- and long-range dependencies in the amino acid sequence.
+2. Creating models that focus on improving Q3 and Q8 prediction by exploring novel architectures
+or feature representations.
+
+### Dataset:
+Protein Secondary Structure (labels are sst3 and sst8):
+https://www.kaggle.com/datasets/alfrandom/protein-secondary-structure
 
 ## Experiment Portfolio
 
@@ -67,7 +87,7 @@ Deep learning for protein structure prediction addresses the challenge of inferr
 | **Exp 3 · v1** | `Exp_3_HybridPSSP_v1_to_4/v1/` | PyTorch script refactor of the BiLSTM baseline with CLI tooling. | Added `ProteinDataset`, stratified splits, macro-F1 checkpointing, and Q3-only supervision with optional external features. | Q3 macro-F1 **0.7037**.
 | **Exp 3 · v2** | `Exp_3_HybridPSSP_v1_to_4/v2/` | Extend v1 with optional Transformer layers and improved optimisation. | AdamW + OneCycleLR, AMP, label smoothing, configurable attention stack, length trimming, and feature dimension inference. | Q3 macro-F1 **0.6997** (attention-heavy configs overfit without richer inputs).
 | **Exp 3 · v3** | `Exp_3_HybridPSSP_v1_to_4/v3/` | Transition to a true hybrid that predicts Q3 and Q8 jointly. | Introduced parallel CNN + attention fusion, Q8 heads with class weighting, data loader support for Q8 labels, and richer CLI surface. | Q3 macro-F1 **0.6987** · Q8 macro-F1 **0.2942** (highlighted need for higher-capacity features).
-| **Exp 3 · v4 (final)** | `Exp_3_HybridPSSP_v1_to_4/v4 (final)/` | Final HybridPSSP architecture mixing Transformer encoders with dilated CNNs and ESM embeddings. | Learned positional encodings, dilated residual CNN blocks, flexible fusion (`sum`/`concat`), ESM embedding integration, improved masking, AMP-ready data loaders, and confusion-matrix visualisation. | Q3 macro-F1 **0.8707** · Q8 macro-F1 **0.5210** (ESM embeddings only).
+| **Exp 3 · v4 (final)** | `Exp_3_HybridPSSP_v1_to_4/v4_final` | Final HybridPSSP architecture mixing Transformer encoders with dilated CNNs and ESM embeddings. | Learned positional encodings, dilated residual CNN blocks, flexible fusion (`sum`/`concat`), ESM embedding integration, improved masking, AMP-ready data loaders, and confusion-matrix visualisation. | Q3 macro-F1 **0.8707** · Q8 macro-F1 **0.5210** (ESM embeddings only).
 
 ### Development Narrative
 - **Data foundation**: All experiments rely on the curated 2018 PDB/PISCES intersect. `dataprep.py` matured from notebook utilities to CLI tools capable of generating train/val/test CSVs, PSI-BLAST PSSMs, and ESM embeddings. Alignment, trimming, and normalisation routines now guarantee `(B, L, D)` feature stacks without manual fixes.
@@ -86,6 +106,10 @@ Deep learning for protein structure prediction addresses the challenge of inferr
 ## Folder Guide
 - `Exp_1_Transformer/`: Experimental notebook for the transformer-only baseline (`protein_transformer.ipynb`).
 - `Exp_2_CNN_BiLSTM/`: Notebook exploring CNN + BiLSTM hybrids (`protein_4001.ipynb`, processed CSVs for reproducibility).
-- `Exp_3_HybridPSSP_v1_to_4/`: Scripted experiments v1–v4 with progressively richer architectures, logs, and utilities.
+- `Exp_3_HybridPSSP_v1_to_4/`: Scripted experiments v1–v4 with progressively richer architectures, logs (containing all the changes between versions and results for each version), and utilities.
 - `ReadME.md`: This consolidated summary and quickstart guide.
 
+## Authors:
+- Garv Sachdev | GARV001@e.ntu.edu.sg
+- Bay Yong Wei Nicholas | BAYY0005@e.ntu.edu.sg
+- Nathaniel Lo Tzin Ye | LOTZ0001@e.ntu.edu.sg
